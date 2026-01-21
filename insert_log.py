@@ -1,16 +1,11 @@
 # insert_log.py
-import psycopg2 as psycopg
+import psycopg
 from db_config import DB_CONFIG
 import json
 
 def insert_log(level: str, service: str, message: str, context=None):
-    """
-    Infogar en ny logg-post i tabellen logs.
-    context: valfri dict som lagras som JSONB
-    """
     if context is None:
         context = {}
-
     sql = """
         INSERT INTO logs (level, service, message, context)
         VALUES (%s, %s, %s, %s)

@@ -1,3 +1,6 @@
 streamlit
-psycopg2[binary]
+psycopg[binary]
 pandas
+fastapi
+uvicorn
+xlsxwriter
