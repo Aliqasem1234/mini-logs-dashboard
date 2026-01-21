@@ -1,20 +1,30 @@
-# insert_log.py
 import psycopg
 from db_config import DB_CONFIG
-import json
+from datetime import datetime
+from psycopg.types.json import Json
 
-def insert_log(level: str, service: str, message: str, context=None):
-    if context is None:
-        context = {}
-    sql = """
-        INSERT INTO logs (level, service, message, context)
-        VALUES (%s, %s, %s, %s)
+
+
+def insert_log(level, service, message, context, user_id):
     """
-    try:
-        with psycopg.connect(**DB_CONFIG) as conn:
-            with conn.cursor() as cur:
-                cur.execute(sql, (level, service, message, json.dumps(context)))
-            conn.commit()
-        print("✅ Logg infogad")
-    except Exception as e:
-        print("❌ Misslyckades:", e)
+    Sparar en ny logg kopplad till en användare.
+    """
+    sql = """
+        INSERT INTO logs (timestamp, level, service, message, context, user_id)
+        VALUES (%s, %s, %s, %s, %s, %s)
+    """
+
+    with psycopg.connect(**DB_CONFIG) as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                sql,
+                (
+                    datetime.utcnow(),
+                    level,
+                    service,
+                    message,
+                    Json(context),
+                    user_id,
+                ),
+            )
+        conn.commit()

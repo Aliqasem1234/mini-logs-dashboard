@@ -1,7 +1,6 @@
 import os
 from dotenv import load_dotenv
 
-# Ladda miljövariabler från .env-filen
 load_dotenv()
 
 DB_CONFIG = {
@@ -9,5 +8,5 @@ DB_CONFIG = {
     "port": int(os.getenv("DB_PORT", 5432)),
     "dbname": os.getenv("DB_NAME"),
     "user": os.getenv("DB_USER"),
-    "password": os.getenv("DB_PASSWORD")
+    "password": os.getenv("DB_PASSWORD"),
 }
