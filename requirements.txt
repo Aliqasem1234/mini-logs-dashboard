@@ -4,4 +4,4 @@ pandas
 fastapi
 uvicorn
 xlsxwriter
-echo "python-dotenv" >> requirements.txt
+python-dotenv
