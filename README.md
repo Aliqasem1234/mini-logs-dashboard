@@ -1,40 +1,56 @@
 # Mini Logs Dashboard
-A lightweight, real-time logging system built with PostgreSQL, Python, and Streamlit.
+
+A lightweight internal logging system built with **Python**, **Streamlit**, **FastAPI**, and **PostgreSQL (Supabase)**.
+
+The project combines a web-based dashboard for users and administrators with a REST API for programmatic access to logs.
+
+---
 
 ## 🌟 Highlights
-- Self-registration & role-based login (viewer / admin)
-- Insert logs (INFO, WARNING, ERROR) via web form or REST API
-- Real-time table updates, Excel export & 24-hour timeline chart
-- Audio alert on ERROR (admin only)
-- Clean code, ready for Streamlit Cloud or Docker
 
-## 📸 Screenshot
-![Dashboard](https://i.imgur.com/placeholder.png)
-*(replace with your own screenshot)*
+- User self-registration and secure login
+- Role-based access control (viewer / admin)
+- Users can only view their own logs
+- Admins can view and manage all logs
+- Log levels: INFO, WARNING, ERROR
+- JSON context support (stored as JSONB)
+- Interactive 24-hour timeline visualization
+- Export logs to Excel
+- Manual refresh button
+- REST API built with FastAPI
+- Secure environment-based configuration (.env / Streamlit Secrets)
+- Runs locally and in production (Streamlit Cloud)
 
-## 🚀 Quick Start
-1. Clone & enter folder
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/mini-logs-dashboard.git
-   cd mini-logs-dashboard
+---
 
+## 🖥️ Components
 
-2.Install dependencies
+- **Streamlit Dashboard**
+  - User interface
+  - Authentication
+  - Log creation
+  - Visualization & export
+
+- **FastAPI Backend**
+  - REST endpoints for logs
+  - Pagination and filtering
+  - Shared database with Streamlit
+
+---
+
+## 🚀 Quick Start (Local Setup)
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/YOUR_USERNAME/mini-logs-dashboard.git
+cd mini-logs-dashboard.
+
+#------------------------------------------------#
+
+2. Install dependencies
 pip install -r requirements.txt
 
-
-
-3.Create PostgreSQL DB & tables
-CREATE DATABASE logs;
-CREATE TABLE logs (
-    id SERIAL PRIMARY KEY,
-    timestamp TIMESTAMP DEFAULT NOW(),
-    level VARCHAR(10),
-    service VARCHAR(50),
-    message TEXT,
-    context JSONB
-);
-
+3. Create PostgreSQL tables
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -42,59 +58,86 @@ CREATE TABLE users (
     role VARCHAR(20) DEFAULT 'viewer'
 );
 
--- first admin (password = 123)
-INSERT INTO users (username, password_hash, role)
-VALUES ('admin', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'admin');
+CREATE TABLE logs (
+    id SERIAL PRIMARY KEY,
+    timestamp TIMESTAMP DEFAULT NOW(),
+    level VARCHAR(10),
+    service VARCHAR(50),
+    message TEXT,
+    context JSONB,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE
+);
+
+4. Create .env file (local only)
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=postgres
+DB_USER=postgres
+DB_PASSWORD="your_password"
 
 
+⚠️ .env must not be committed to GitHub.
 
-4.Update db_config.py with your credentials.
-
-
-
-Run Streamlit
-streamlit run app.py --server.port 8501
-Open http://localhost:8501
+▶️ Run Streamlit Dashboard
+streamlit run app.py
 
 
+Open:
 
-6.Run FastAPI (optional)
-Docs: http://127.0.0.1:8000/docs
+http://localhost:8501
 
-📊 API Example
-curl "http://127.0.0.1:8000/logs?page=1&size=5&level=ERROR"
+▶️ Run FastAPI (optional)
+uvicorn api:app --reload
 
 
-📁 File Structure
+API documentation:
 
+http://127.0.0.1:8000/docs
+
+📁 Project Structure
 mini-logs-dashboard/
-├── app.py              # Streamlit UI + login + export
-├── api.py              # FastAPI REST endpoints
-├── auth.py             # SHA-256 password utils
-├── db_config.py        # PostgreSQL credentials
-├── fetch_logs.py       # Pagination & filters
-├── insert_log.py       # Insert function
-├── requirements.txt    # Python packages
-└── README.md           # This file
+├── app.py              # Streamlit dashboard
+├── api.py              # FastAPI REST API
+├── auth.py             # Authentication logic
+├── insert_log.py       # Log insertion
+├── fetch_logs.py       # Role-based queries
+├── db_config.py        # Database configuration
+├── requirements.txt
+├── README.md
 
 🛠️ Tech Stack
-Backend: Python 3.11+, PostgreSQL, FastAPI
-Frontend: Streamlit, Pandas, ExcelWriter
-Auth: SHA-256 hashing, session state
-Charts: Native Streamlit + Altair timeline
+
+Backend: Python, FastAPI
+
+Frontend: Streamlit
+
+Database: PostgreSQL (Supabase)
+
+Driver: psycopg
+
+Data: pandas
+
+Export: Excel (xlsxwriter)
+
+Auth: SHA-256 hashing
+
 🚦 Roadmap
-Docker image
-OAuth login (Google/GitHub)
-Slack/Teams webhooks on ERROR
-Dark mode toggle
-🤝 Contributing
-Pull requests are welcome!
-Fork the repo
-Create your feature branch (git checkout -b feature/amazing)
-Commit your changes (git commit -m 'Add amazing feature')
-Push to the branch (git push origin feature/amazing)
-Open a Pull Request
+
+API authentication (token-based)
+
+Log filtering via UI
+
+Pagination controls
+
+Docker support
+
+OAuth login (GitHub / Google)
+
 📄 License
-MIT – feel free to use in personal or commercial projects.
+
+MIT License – free to use for personal and commercial projects.
+
 ✨ Author
-Ali Alsalaima – aliqasem606060@gmail.com
+
+Developed by Ali Alsalaima
+Email: aliqasem606060@gmail.com
